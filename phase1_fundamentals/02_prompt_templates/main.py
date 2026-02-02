@@ -26,28 +26,16 @@ from langchain_core.prompts import (
 
 # 加载环境变量
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_API_KEY = os.getenv("deepseek_api")
 
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here":
-    raise ValueError(
-        "\n请先在 .env 文件中设置有效的 GROQ_API_KEY\n"
-        "访问 https://console.groq.com/keys 获取免费密钥"
-    )
+model = init_chat_model(
+    "deepseek-r1",
+    model_provider="openai",
+    api_key=GROQ_API_KEY,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    streaming=True,
+)
 
-# 初始化模型
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
-
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here_replace_this":
-    raise ValueError(
-        "\n请先在 .env 文件中设置有效的 GROQ_API_KEY\n"
-        "访问 https://console.groq.com/keys 获取免费密钥"
-    )
-
-# 初始化模型
-
-# ============================================================================
-# 示例 1：为什么需要提示词模板？
-# ============================================================================
 def example_1_why_templates():
     """
     示例1：对比字符串拼接 vs 模板
@@ -57,7 +45,6 @@ def example_1_why_templates():
     """
     print("\n" + "="*70)
     print("示例 1：为什么需要提示词模板？")
-    print("="*70)
 
     # ❌ 不推荐：使用字符串拼接
     print("\n【方式 1：字符串拼接（不推荐）】")
@@ -98,9 +85,6 @@ def example_1_why_templates():
     print("  3. 类型安全 - 自动验证变量")
     print("  4. 可测试 - 更容易编写测试用例")
 
-# ============================================================================
-# 示例 2：PromptTemplate 基础用法
-# ============================================================================
 def example_2_prompt_template_basics():
     """
     示例2：PromptTemplate 的基本用法
@@ -110,7 +94,6 @@ def example_2_prompt_template_basics():
     """
     print("\n" + "="*70)
     print("示例 2：PromptTemplate 基础用法")
-    print("="*70)
 
     # 方法 1：使用 from_template（最简单）
     print("\n【方法 1：from_template（推荐）】")
@@ -146,6 +129,8 @@ def example_2_prompt_template_basics():
     # invoke 直接返回格式化后的值
     prompt_value = template3.invoke({"theme": "春天", "style": "现代"})
     print(f"生成的提示词：\n{prompt_value.text}\n")
+    response2 = model.invoke(prompt_value)
+    print(f"AI 回复：{response2.content}\n")
 
 # ============================================================================
 # 示例 3：ChatPromptTemplate - 聊天消息模板
@@ -159,7 +144,6 @@ def example_3_chat_prompt_template():
     """
     print("\n" + "="*70)
     print("示例 3：ChatPromptTemplate - 聊天消息模板")
-    print("="*70)
 
     # 方法 1：使用元组格式（最简单，推荐）
     print("\n【方法 1：元组格式（推荐）】")
@@ -208,7 +192,6 @@ def example_4_conversation_template():
     """
     print("\n" + "="*70)
     print("示例 4：多轮对话模板")
-    print("="*70)
 
     # 创建包含对话历史的模板
     template = ChatPromptTemplate.from_messages([
@@ -252,7 +235,6 @@ def example_5_message_templates():
     """
     print("\n" + "="*70)
     print("示例 5：MessagePromptTemplate 类（高级用法）")
-    print("="*70)
 
     # 分别创建不同类型的消息模板
     system_template = SystemMessagePromptTemplate.from_template(
@@ -298,7 +280,6 @@ def example_6_partial_variables():
     """
     print("\n" + "="*70)
     print("示例 6：部分变量（Partial Variables）")
-    print("="*70)
 
     # 创建原始模板
     original_template = ChatPromptTemplate.from_messages([

@@ -12,31 +12,19 @@ from langchain.chat_models import init_chat_model
 
 # 加载环境变量
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here":
-    raise ValueError(
-        "\n请先在 .env 文件中设置有效的 GROQ_API_KEY\n"
-        "访问 https://console.groq.com/keys 获取免费密钥"
-    )
-
-# 初始化模型
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
-
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here_replace_this":
-    print("请先在 .env 文件中设置有效的 GROQ_API_KEY")
-    exit(1)
-
-# 初始化模型
-# model 已在文件开头通过 get_model() 初始化
+GROQ_API_KEY = os.getenv("deepseek_api")
+model = init_chat_model(
+    "deepseek-r1",
+    model_provider="openai",
+    api_key=GROQ_API_KEY,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    streaming=True,
+)
 
 print("="*70)
 print(" invoke 方法深入实践")
 print("="*70)
 
-# ============================================================================
-# 练习 1：理解三种输入格式
-# ============================================================================
 def exercise_1_input_formats():
     """
     练习目标：理解 invoke 的三种输入格式
@@ -46,7 +34,6 @@ def exercise_1_input_formats():
     """
     print("\n" + "="*70)
     print("练习 1：三种输入格式对比")
-    print("="*70)
 
     # 格式 1：纯字符串
     print("\n【格式 1：纯字符串】")
@@ -80,9 +67,6 @@ def exercise_1_input_formats():
     print("   - 格式2：有系统提示（简洁），回复较短")
     print("   - 格式3：有系统提示（幽默），回复风格不同")
 
-# ============================================================================
-# 练习 2：系统提示的威力
-# ============================================================================
 def exercise_2_system_prompt():
     """
     练习目标：理解 system 角色的作用
@@ -90,7 +74,6 @@ def exercise_2_system_prompt():
     """
     print("\n" + "="*70)
     print("练习 2：系统提示的威力")
-    print("="*70)
 
     question = "什么是递归？"
 
@@ -134,7 +117,6 @@ def exercise_3_conversation():
     """
     print("\n" + "="*70)
     print("练习 3：多轮对话实践")
-    print("="*70)
 
     # 初始化对话
     conversation = [
@@ -191,7 +173,6 @@ def exercise_4_wrong_conversation():
     """
     print("\n" + "="*70)
     print("练习 4：错误示例 - AI 失忆")
-    print("="*70)
 
     print("\n【错误做法：不保存对话历史】\n")
 
@@ -244,7 +225,6 @@ def exercise_5_response_structure():
     """
     print("\n" + "="*70)
     print("练习 5：深入理解返回值")
-    print("="*70)
 
     response = model.invoke("用20个字解释什么是人工智能")
 
@@ -293,7 +273,6 @@ def exercise_6_chatbot():
     """
     print("\n" + "="*70)
     print("练习 6：实战 - 简单聊天机器人")
-    print("="*70)
 
     print("\n这是一个简单的聊天机器人示例")
     print("它会记住对话历史，并统计 token 使用情况")

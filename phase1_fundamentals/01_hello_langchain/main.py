@@ -20,17 +20,14 @@ from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
 # 加载环境变量
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here":
-    raise ValueError(
-        "\n请先在 .env 文件中设置有效的 GROQ_API_KEY\n"
-        "访问 https://console.groq.com/keys 获取免费密钥"
-    )
-
-# 初始化模型
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
-
+GROQ_API_KEY = os.getenv("deepseek_api")
+# 格式：init_chat_model("提供商:模型名称")
+model = init_chat_model(
+    "openai:deepseek-r1",
+    api_key=GROQ_API_KEY,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    streaming=True,
+)
 # ============================================================================
 # 示例 1：最简单的 LLM 调用
 # ============================================================================
@@ -44,11 +41,6 @@ def example_1_simple_invoke():
     """
     print("\n" + "="*70)
     print("示例 1：最简单的 LLM 调用")
-    print("="*70)
-
-    # 初始化模型
-    # 格式：init_chat_model("提供商:模型名称")
-    # 使用文件开头初始化的 model
 
     # 使用字符串直接调用模型
     response = model.invoke("你好！请用一句话介绍什么是人工智能。")
@@ -74,7 +66,6 @@ def example_2_messages():
     """
     print("\n" + "="*70)
     print("示例 2：使用消息列表构建对话")
-    print("="*70)
 
     # model 已在文件开头通过 get_model() 初始化
 
@@ -117,9 +108,6 @@ def example_3_dict_messages():
     """
     print("\n" + "="*70)
     print("示例 3：使用字典格式的消息（推荐）")
-    print("="*70)
-
-    # model 已在文件开头通过 get_model() 初始化
 
     # 使用字典格式构建消息
     messages = [
@@ -130,13 +118,12 @@ def example_3_dict_messages():
     print("消息列表:")
     for msg in messages:
         print(f"  {msg['role']}: {msg['content']}")
-
     response = model.invoke(messages)
-
     print(f"\nAI 回复:\n{response.content}")
 
 # ============================================================================
 # 示例 4：配置模型参数
+# 使用temperature参数控制随机性需要和模型相结合
 # ============================================================================
 def example_4_model_parameters():
     """
@@ -152,17 +139,17 @@ def example_4_model_parameters():
     """
     print("\n" + "="*70)
     print("示例 4：配置模型参数")
-    print("="*70)
 
-    # 创建一个温度较低的模型（更确定性）
     model_deterministic = init_chat_model(
-        "groq:llama-3.3-70b-versatile",
+        "deepseek-r1",
+        model_provider="openai",
+        api_key=GROQ_API_KEY,
+        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         temperature=0.0,  # 最确定性
         max_tokens=100    # 限制输出长度
     )
 
     prompt = "写一个关于春天的句子。"
-
     print(f"提示词: {prompt}")
     print("\n使用 temperature=0.0 (确定性输出):")
 
@@ -175,7 +162,10 @@ def example_4_model_parameters():
 
     # 创建一个温度较高的模型（更随机）
     model_creative = init_chat_model(
-        "groq:llama-3.3-70b-versatile",
+        model="kimi-k2-thinking",
+        model_provider="openai",
+        api_key=GROQ_API_KEY,
+        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         temperature=1.5,  # 更有创造性
         max_tokens=100
     )
@@ -202,9 +192,6 @@ def example_5_response_structure():
     """
     print("\n" + "="*70)
     print("示例 5：invoke 返回值详解")
-    print("="*70)
-
-    # model 已在文件开头通过 get_model() 初始化
 
     response = model.invoke("解释一下什么是递归？用一句话。")
 
@@ -241,7 +228,6 @@ def example_6_error_handling():
     """
     print("\n" + "="*70)
     print("示例 6：错误处理最佳实践")
-    print("="*70)
 
     try:
         # model 已在文件开头通过 get_model() 初始化
@@ -272,7 +258,6 @@ def example_7_multiple_models():
     """
     print("\n" + "="*70)
     print("示例 7：对比不同模型的输出")
-    print("="*70)
 
     # Groq 上可用的不同模型
     models_to_test = [

@@ -100,17 +100,21 @@ AI 会根据：
 **关键：传入历史消息**
 
 ```python
+# 通过在每个对话中配置config参数，使用相同的thread_id保持通话
+
 # 第一轮
 response1 = agent.invoke({
     "messages": [{"role": "user", "content": "10 + 5"}]
-})
+    },
+    config={"configurable": {"thread_id":"conversation-1"}})
 
 # 第二轮（带历史）
 response2 = agent.invoke({
     "messages": response1['messages'] + [
         {"role": "user", "content": "再乘以 3"}
     ]
-})
+    },
+    config={"configurable": {"thread_id":"conversation-1"}})
 ```
 
 ## 常见问题

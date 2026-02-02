@@ -15,18 +15,15 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 # 加载环境变量
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_API_KEY = os.getenv("deepseek_api")
 
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here":
-    raise ValueError(
-        "\n请先在 .env 文件中设置有效的 GROQ_API_KEY\n"
-        "访问 https://console.groq.com/keys 获取免费密钥"
-    )
-
-# 初始化模型
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
-
-
+model = init_chat_model(
+    "deepseek-r1",
+    model_provider="openai",
+    api_key=GROQ_API_KEY,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    streaming=True,
+)
 
 # ============================================================================
 # 示例 1：三种消息类型

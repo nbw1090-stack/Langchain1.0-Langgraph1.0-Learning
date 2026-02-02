@@ -32,18 +32,14 @@ from weather import get_weather
 
 # 加载环境变量
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here":
-    raise ValueError(
-        "\n请先在 .env 文件中设置有效的 GROQ_API_KEY\n"
-        "访问 https://console.groq.com/keys 获取免费密钥"
-    )
-
-# 初始化模型
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
-
-
+GROQ_API_KEY = os.getenv("deepseek_api")
+model = init_chat_model(
+    "deepseek-r1",
+    model_provider="openai",
+    api_key=GROQ_API_KEY,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    streaming=True,
+)
 
 # ============================================================================
 # 示例 1：理解执行循环 - 查看完整消息历史
@@ -84,7 +80,7 @@ def example_1_understand_loop():
                 print(f"  - 工具: {tc['name']}")
                 print(f"  - 参数: {tc['args']}")
 
-        if hasattr(msg, 'name'):
+        if hasattr(msg, 'name') and msg.name:
             print(f"工具名: {msg.name}")
 
     print("\n\n执行流程：")
@@ -128,9 +124,9 @@ def example_2_streaming():
         "messages": [{"role": "user", "content": "北京天气如何？"}]
     }):
         # chunk 是字典，包含更新的状态
-        if 'messages' in chunk:
+        if 'model' in chunk and 'messages' in chunk["model"]:
             # 获取最新的消息
-            latest_msg = chunk['messages'][-1]
+            latest_msg = chunk["model"]['messages'][-1]
 
             # 如果是 AI 的最终回答
             if hasattr(latest_msg, 'content') and latest_msg.content:
@@ -168,6 +164,7 @@ def example_3_multi_step():
 
     # 统计工具调用次数
     tool_calls_count = 0
+    print(response['messages'])
     for msg in response['messages']:
         if hasattr(msg, 'tool_calls') and msg.tool_calls:
             tool_calls_count += len(msg.tool_calls)
@@ -209,8 +206,8 @@ def example_4_inspect_state():
         step += 1
         print(f"\n步骤 {step}:")
 
-        if 'messages' in chunk:
-            latest = chunk['messages'][-1]
+        if 'model' in chunk and 'messages' in chunk['model']:
+            latest = chunk['model']['messages'][-1]
             msg_type = latest.__class__.__name__
             print(f"  类型: {msg_type}")
 

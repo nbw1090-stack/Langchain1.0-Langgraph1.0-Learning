@@ -39,6 +39,7 @@ from langchain.chat_models import init_chat_model
 
 model = init_chat_model(
     "provider:model_name",  # 提供商:模型名称
+    base_url="model_base_url", # 模型提供商的基础URL
     api_key="your-api-key",  # API 密钥（可选，可从环境变量读取）
     temperature=0.7,         # 温度参数（可选）
     max_tokens=1000,         # 最大 token 数（可选）
@@ -51,6 +52,7 @@ model = init_chat_model(
 | 参数 | 类型 | 说明 | 默认值 |
 |------|------|------|--------|
 | `model` | `str` | **必需**。格式为 `"provider:model_name"`，如 `"groq:llama-3.3-70b-versatile"` | 无 |
+| `base_url` | `str` | 如果不提供会从model参数中自动获取，不过最好指定，否则可能会导致失败。格式为 `"http://xxxxx"`| 无 |
 | `api_key` | `str` | API 密钥。如果不提供，会从环境变量中读取（如 `GROQ_API_KEY`） | `None` |
 | `temperature` | `float` | 控制输出随机性。范围 0.0-2.0。<br>- `0.0`：最确定性<br>- `1.0`：默认，平衡<br>- `2.0`：最随机 | `1.0` |
 | `max_tokens` | `int` | 限制模型输出的最大 token 数量 | 模型默认值 |
