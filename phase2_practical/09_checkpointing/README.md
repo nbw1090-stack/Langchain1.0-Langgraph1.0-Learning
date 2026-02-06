@@ -1,4 +1,5 @@
 # 09 - Checkpointing (检查点持久化)
+- 需要安装pip install langgraph-checkpoint-sqlite
 
 ## 核心概念
 

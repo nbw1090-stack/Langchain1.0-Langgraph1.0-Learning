@@ -7,6 +7,9 @@ LangChain 1.0 - Memory Basics (内存管理基础)
 2. checkpointer 参数 - 为 Agent 添加内存
 3. thread_id - 会话管理
 4. 多轮对话状态保持
+
+问题：
+当用户输入的信息是需要调用工具回去的时候，可能会存在获取的结果是调用工具的json文本
 """
 
 import os
@@ -18,18 +21,14 @@ from langgraph.checkpoint.memory import InMemorySaver
 
 # 加载环境变量
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here":
-    raise ValueError(
-        "\n请先在 .env 文件中设置有效的 GROQ_API_KEY\n"
-        "访问 https://console.groq.com/keys 获取免费密钥"
-    )
-
-# 初始化模型
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
-
-
+GROQ_API_KEY = os.getenv("deepseek_api")
+model = init_chat_model(
+    "deepseek-r1",
+    model_provider="openai",
+    api_key=GROQ_API_KEY,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    streaming=True,
+)
 
 # 创建一个简单的工具
 @tool
@@ -98,7 +97,7 @@ def example_2_with_memory():
         model=model,
         tools=[],
         system_prompt="你是一个有帮助的助手。",
-            checkpointer=InMemorySaver()  # 添加内存管理
+        checkpointer=InMemorySaver()  # 添加内存管理
     )
 
     # config 中指定 thread_id
@@ -140,7 +139,7 @@ def example_3_multiple_threads():
         model=model,
         tools=[],
         system_prompt="你是一个有帮助的助手。",
-            checkpointer=InMemorySaver()
+        checkpointer=InMemorySaver()
     )
 
     # 会话 1

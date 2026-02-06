@@ -10,18 +10,14 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 
 # 加载环境变量
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here":
-    raise ValueError(
-        "\n请先在 .env 文件中设置有效的 GROQ_API_KEY\n"
-        "访问 https://console.groq.com/keys 获取免费密钥"
-    )
-
-# 初始化模型
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
-
-
+GROQ_API_KEY = os.getenv("deepseek_api")
+model = init_chat_model(
+    "deepseek-r1",
+    model_provider="openai",
+    api_key=GROQ_API_KEY,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    streaming=True,
+)
 
 def demo_long_conversation():
     """
@@ -33,7 +29,7 @@ def demo_long_conversation():
 
     db_path = "long_conversation.sqlite"
 
-    with SqliteSaver.from_conn_string(f"sqlite:///{db_path}") as checkpointer:
+    with SqliteSaver.from_conn_string(db_path) as checkpointer:
         agent = create_agent(
             model=model,
             tools=[],
@@ -45,7 +41,7 @@ def demo_long_conversation():
 
         # 模拟 50 轮对话
         print("\n[模拟 50 轮对话...]")
-        for i in range(1, 51):
+        for i in range(1, 2):
             agent.invoke(
                 {"messages": [{"role": "user", "content": f"这是第 {i} 条消息"}]},
                 config=config
@@ -57,8 +53,8 @@ def demo_long_conversation():
 
         # 获取当前状态
         state = checkpointer.get(config)
-        if state and state.values:
-            messages = state.values.get("messages", [])
+        if state and state["channel_values"]:
+            messages = state["channel_values"].get("messages", [])
             print(f"\n⚠️ 当前加载的消息数量：{len(messages)}")
             print(f"⚠️ 这意味着每次 invoke 都会加载这么多消息！")
 

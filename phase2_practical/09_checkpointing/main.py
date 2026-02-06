@@ -34,17 +34,14 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 
 # 加载环境变量
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here":
-    raise ValueError(
-        "\n请先在 .env 文件中设置有效的 GROQ_API_KEY\n"
-        "访问 https://console.groq.com/keys 获取免费密钥"
-    )
-
-# 初始化模型
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
-
+GROQ_API_KEY = os.getenv("deepseek_api")
+model = init_chat_model(
+    "deepseek-r1",
+    model_provider="openai",
+    api_key=GROQ_API_KEY,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    streaming=True,
+)
 
 
 @tool
@@ -111,7 +108,7 @@ def example_2_sqlite_saver():
     示例2：使用 SqliteSaver 实现持久化
 
     关键：
-    1. SqliteSaver.from_conn_string("sqlite:///path/to/db.sqlite")
+    1. SqliteSaver.from_conn_string("path/to/db.sqlite")
     2. 对话持久化到 SQLite 文件
     3. 程序重启后仍可恢复
     """

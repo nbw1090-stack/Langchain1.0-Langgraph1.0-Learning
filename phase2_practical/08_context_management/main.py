@@ -19,17 +19,14 @@ from langchain.agents.middleware import SummarizationMiddleware
 
 # 加载环境变量
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here":
-    raise ValueError(
-        "\n请先在 .env 文件中设置有效的 GROQ_API_KEY\n"
-        "访问 https://console.groq.com/keys 获取免费密钥"
-    )
-
-# 初始化模型
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
-
+GROQ_API_KEY = os.getenv("deepseek_api")
+model = init_chat_model(
+    "deepseek-r1",
+    model_provider="openai",
+    api_key=GROQ_API_KEY,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    streaming=True,
+)
 
 
 @tool
@@ -62,7 +59,7 @@ def example_1_problem_unlimited_growth():
         model=model,
         tools=[],
         system_prompt="你是一个有帮助的助手。",
-            checkpointer=InMemorySaver()
+        checkpointer=InMemorySaver()
     )
 
     config = {"configurable": {"thread_id": "long_conversation"}}
@@ -112,7 +109,7 @@ def example_2_summarization_middleware():
         middleware=[
             SummarizationMiddleware(
                 model="groq:llama-3.3-70b-versatile",
-                max_tokens_before_summary=500  # 超过 500 tokens 就摘要
+                trigger=("tokens", 500)  # 超过 500 tokens 就摘要
             )
         ]
     )
@@ -177,7 +174,7 @@ agent = create_agent(
     middleware=[
         SummarizationMiddleware(
             model="groq:llama-3.3-70b-versatile",  # 摘要模型
-            max_tokens_before_summary=500,         # 500 tokens 触发
+            trigger=("tokens", 500),         # 500 tokens 触发
         )
     ],
     checkpointer=InMemorySaver()
@@ -222,8 +219,8 @@ def example_4_manual_trimming():
 
     trimmed = trim_messages(
         messages,
-        max_count=5,  # 严格保留最后 5 条消息
-        # max_tokens=100,  # 或使用 token 数限制
+        # max_messages=5,  # 严格保留最后 5 条消息
+        max_tokens=2,  # 或使用 token 数限制
         strategy="last",  # 保留最后的消息
         token_counter=len  # 简单计数器（实际应该用 token 计数）这里其实不会被用到，因为 max_count 优先
     )
@@ -339,7 +336,7 @@ def example_6_practical_customer_service():
             config=config
         )
         print(f"客服: {response['messages'][-1].content}")
-
+    print(response["messages"])
     print(f"\n总消息数: {len(response['messages'])}")
     print("\n关键点：")
     print("  - 自动管理对话长度")
@@ -378,7 +375,6 @@ def main():
         print("\n核心要点：")
         print("  SummarizationMiddleware - 自动摘要（推荐）")
         print("  trim_messages - 手动修剪")
-        print("  max_tokens_before_summary - 触发阈值")
         print("  middleware 在 create_agent 中配置")
         print("\n下一步：")
         print("  09_checkpointing - 持久化对话状态")
