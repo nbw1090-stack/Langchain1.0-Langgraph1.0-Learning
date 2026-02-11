@@ -21,8 +21,7 @@ model = init_chat_model(
     "deepseek-r1",
     model_provider="openai",
     api_key=GROQ_API_KEY,
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-    streaming=True,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
 )
 
 print("=" * 70)
@@ -63,8 +62,8 @@ print("-" * 70)
 for chunk in agent.stream({
     "messages": [{"role": "user", "content": "5 乘以 6"}]
 }):
-    if 'messages' in chunk:
-        latest = chunk['messages'][-1]
+    if 'model' in chunk and 'messages' in chunk["model"]:
+        latest = chunk["model"]['messages'][-1]
         if hasattr(latest, 'content') and latest.content:
             if not hasattr(latest, 'tool_calls') or not latest.tool_calls:
                 print(f"最终答案: {latest.content}")

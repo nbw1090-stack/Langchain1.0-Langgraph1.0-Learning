@@ -21,8 +21,7 @@ model = init_chat_model(
     "deepseek-r1",
     model_provider="openai",
     api_key=GROQ_API_KEY,
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-    streaming=True,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
 )
 
 # ============================================================================
@@ -243,17 +242,17 @@ def main():
     print("="*70)
 
     try:
-        # example_1_message_types()
-        # input("\n按 Enter 继续...")
+        example_1_message_types()
+        input("\n按 Enter 继续...")
 
-        # example_2_conversation_history()
-        # input("\n按 Enter 继续...")
+        example_2_conversation_history()
+        input("\n按 Enter 继续...")
 
-        # example_3_wrong_way()
-        # input("\n按 Enter 继续...")
+        example_3_wrong_way()
+        input("\n按 Enter 继续...")
 
-        # example_4_optimize_history()
-        # input("\n按 Enter 继续...")
+        example_4_optimize_history()
+        input("\n按 Enter 继续...")
 
         example_5_simple_chatbot()
 

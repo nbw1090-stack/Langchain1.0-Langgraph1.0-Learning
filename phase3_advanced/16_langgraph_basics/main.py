@@ -15,7 +15,7 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 
 # 加载环境变量
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_API_KEY = os.getenv("deepseek_api")
 
 if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here":
     raise ValueError(
@@ -24,8 +24,12 @@ if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here":
     )
 
 # 初始化模型
-model = init_chat_model("groq:llama-3.3-70b-versatile", api_key=GROQ_API_KEY)
-
+model = init_chat_model(
+    "deepseek-r1",
+    model_provider="openai",
+    api_key=GROQ_API_KEY,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+)
 # ============================================================
 # 示例 1：简单顺序工作流
 # ============================================================
@@ -225,7 +229,6 @@ def conversation_workflow():
         messages: Annotated[list, add_messages]
         turn_count: int
 
-    
     def chat_node(state: ConversationState) -> dict:
         """对话节点：处理用户消息并生成回复"""
         # 添加系统提示（如果是第一轮）
@@ -234,14 +237,14 @@ def conversation_workflow():
             messages = [
                 SystemMessage(content="你是一个友好的中文助手。记住用户告诉你的信息。")
             ] + messages
-        
+
         # 调用模型
         response = model.invoke(messages)
-        
+
         # 更新轮数
         turn_count = state.get("turn_count", 0) + 1
         print(f"  [对话轮次 {turn_count}] AI: {response.content[:50]}...")
-        
+
         # 返回新消息（会自动追加到 messages 列表）
         return {
             "messages": [response],  # add_messages 会自动追加

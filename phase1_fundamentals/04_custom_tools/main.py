@@ -36,8 +36,7 @@ GROQ_API_KEY = os.getenv("deepseek_api")
 model = init_chat_model(
     "openai:deepseek-r1",
     api_key=GROQ_API_KEY,
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-    streaming=True,
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
 )
 
 # ============================================================================

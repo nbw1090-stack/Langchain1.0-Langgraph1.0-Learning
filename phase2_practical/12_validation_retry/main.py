@@ -132,7 +132,7 @@ def example_2_with_fallbacks():
     primary_model = model
 
     # 备用模型（更可靠或更便宜）
-    fallback_
+    fallback_model = model
     # 配置降级
     llm_with_fallbacks = primary_model.with_fallbacks([fallback_model])
 

@@ -18,7 +18,7 @@ model = init_chat_model(
     model_provider="openai",
     api_key=GROQ_API_KEY,
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-    streaming=True,
+    # streaming=True,  #采用流失输出可能会导致返回的元数据不完整
 )
 
 print("="*70)
@@ -34,6 +34,7 @@ def exercise_1_input_formats():
     """
     print("\n" + "="*70)
     print("练习 1：三种输入格式对比")
+    print("="*70)
 
     # 格式 1：纯字符串
     print("\n【格式 1：纯字符串】")
@@ -42,7 +43,7 @@ def exercise_1_input_formats():
     print(f"回复：{response1.content}\n")
 
     # 格式 2：字典列表（推荐）
-    print("【格式 2：字典列表（推荐）】")
+    print("\n【格式 2：字典列表（推荐）】")
     print("代码：model.invoke([{'role': 'system', ...}, {'role': 'user', ...}])")
     messages2 = [
         {"role": "system", "content": "你是一个简洁的助手，回答限制在30字以内"},
@@ -52,7 +53,7 @@ def exercise_1_input_formats():
     print(f"回复：{response2.content}\n")
 
     # 格式 3：消息对象
-    print("【格式 3：消息对象】")
+    print("\n【格式 3：消息对象】")
     print("代码：model.invoke([SystemMessage(...), HumanMessage(...)])")
     from langchain_core.messages import SystemMessage, HumanMessage
     messages3 = [
@@ -74,6 +75,7 @@ def exercise_2_system_prompt():
     """
     print("\n" + "="*70)
     print("练习 2：系统提示的威力")
+    print("="*70)
 
     question = "什么是递归？"
 
@@ -117,6 +119,7 @@ def exercise_3_conversation():
     """
     print("\n" + "="*70)
     print("练习 3：多轮对话实践")
+    print("="*70)
 
     # 初始化对话
     conversation = [
@@ -173,6 +176,7 @@ def exercise_4_wrong_conversation():
     """
     print("\n" + "="*70)
     print("练习 4：错误示例 - AI 失忆")
+    print("="*70)
 
     print("\n【错误做法：不保存对话历史】\n")
 
@@ -253,8 +257,8 @@ def exercise_5_response_structure():
     print(f"输入 tokens：{usage.get('prompt_tokens')}")
     print(f"输出 tokens：{usage.get('completion_tokens')}")
     print(f"总计 tokens：{usage.get('total_tokens')}")
-    print(f"输入处理时间：{usage.get('prompt_time'):.4f} 秒")
-    print(f"输出生成时间：{usage.get('completion_time'):.4f} 秒\n")
+    # print(f"输入处理时间：{usage.get('prompt_time'):.4f} 秒")
+    # print(f"输出生成时间：{usage.get('completion_time'):.4f} 秒\n")
 
     # 5. 计算成本（示例）
     print("【5. 成本估算（假设每千tokens $0.1）】")
